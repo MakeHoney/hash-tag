@@ -1,0 +1,90 @@
+<h1>New Club</h1>
+
+<% hashConcat = "" %>
+
+<script>
+var numOfHashTag = 0;
+
+
+// db insert
+function addHashTag(event) {
+  if(numOfHashTag > 4) {
+    // alert -> can't exceed 5 tags
+  } else {
+    console.log(event);
+    if(event.keyCode == 13) {
+      var value = document.getElementById('hashText').value;
+      document.getElementById("hashTagContainer")
+      .innerHTML += "<button id=btn_" + numOfHashTag + " onclick=deleteHashTag(event)>"
+      + value + "</button>";
+      numOfHashTag++;
+
+      // empty text box
+      // blank(empty), space and started with #, parsing
+      document.getElementById('hashText').value = "";
+    }
+  }
+}
+
+// db delete
+function deleteHashTag(event) {
+  var btnId = event.target.id;
+  // console.log(event);
+  if(numOfHashTag > 0) {
+    // console.log(btnId);
+    var x = document.getElementById(btnId);
+    x.remove(x.selectedIndex);
+    numOfHashTag--;
+  }
+}
+</script>
+
+
+
+<!--  -->
+
+
+
+<%= form_with(model: @club, local: true) do |form| %>
+  <% if @club.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@club.errors.count, "error") %> prohibited this @club from being saved:</h2>
+
+      <ul>
+      <% @club.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :desc %>
+    <%= form.text_area :desc %>
+  </div>
+
+  <!-- hidden type input tag to pass the hashtag value without user's intervention-->
+  <input type="hidden" name="lastname" value='<%= hashConcat %>'>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
+
+
+<!--  -->
+
+
+
+<!-- Hashtag Container Start -->
+<div id="hashTagContainer"> </div>
+<!-- Hashtag Container End -->
+
+<input id="hashText" type="text" placeholder="#HashTag" onKeyDown="addHashTag(event);">
+<br/>
+<%= link_to 'Back', clubs_path %>
