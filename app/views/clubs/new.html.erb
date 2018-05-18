@@ -1,17 +1,14 @@
 <h1>New Club</h1>
 
-<% hashtagConcat = "" %>
-
 <script>
-var vacancy = [0, 0, 0, 0, 0];
+var vacancy = Array.new();
 var numOfHashTag = 0;
-var hashtagConcat = "";
 
 function addHashTag(event) {
   if(numOfHashTag > 4) {
     // alert -> can't exceed 5 tags
   } else {
-    console.log(event);
+
     if(event.keyCode == 13) {
       var value = document.getElementById('hashText').value;
       var buff = document.getElementById('hashtagBuff').value;
@@ -119,7 +116,7 @@ function assignId(nextIdNumber, btnId){
   </div>
 
   <!-- hidden type input tag to pass the hashtag value without user's intervention-->
-  <input id="hashtagBuff" type="hidden" name="lastname" value='<%= hashtagConcat %>'>
+  <input id="hashtagBuff" type="hidden" name="hashTags">
   <!-- hidden -->
 
 

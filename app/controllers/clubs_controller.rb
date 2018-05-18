@@ -23,11 +23,10 @@ class ClubsController < ApplicationController
 
   # POST /clubs
   # POST /clubs.json
+
   def create
     @club = Club.new(club_params)
-    100.times do
-      puts params[:lastname];
-    end
+
     respond_to do |format|
       if @club.save
         format.html { redirect_to @club, notice: 'Club was successfully created.' }
@@ -35,6 +34,29 @@ class ClubsController < ApplicationController
       else
         format.html { render :new }
         format.json { render json: @club.errors, status: :unprocessable_entity }
+      end
+    end
+
+
+    # new.html.erb로부터 전달받은 해시태그 스트링을 파싱하여 해시태그 테이블에 넣는다.
+    # Hashtag = ApplicationRecord::Hashtag
+    # 파싱
+    hashtags = params[:hashTags].split(",");
+
+    hashtags.each do |hashtag|
+      # 해시태그가 테이블에 이미 존재하면 해시태그를 추가하지 않고 존재하는 해시태그의
+      # id를 전달받아 join table에 두 foreign key 저장
+      if(Hashtag.exists?(hashtag: hashtag))
+        tmpHashtagId = Hashtag.where(hashtag: hashtag)[0]['id'];
+        Club.find(@club['id']).hashtags << Hashtag.find(tmpHashtagId);
+      # 해시태그가 테이블에 존재하지 않으면 해시태그를 테이블에 추가한 뒤
+      # 추가한 해시태그의 id를 전달받아 join table에 두 foreign key 저장
+      else
+        hashNew = Hashtag.new();
+        hashNew['hashtag'] = hashtag;
+        hashNew.save;
+
+        Club.find(@club['id']).hashtags << Hashtag.find(hashNew['id']);
       end
     end
   end
