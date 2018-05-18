@@ -13,7 +13,7 @@ function addHashTag(event) {
       var value = document.getElementById('hashText').value;
       var buff = document.getElementById('hashtagBuff').value;
 
-      for(var i = 0 ; i < 5 ; i++) {
+      for(var i = numOfHashTag ; i < 5 ; i++) {
         if(!vacancy[i]) {
           document.getElementById("hashTagContainer")
           .innerHTML += "<button id=btn_" + i + " onclick=deleteHashTag(event)>"

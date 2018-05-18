@@ -19,7 +19,19 @@ class ClubsController < ApplicationController
 
   # GET /clubs/1/edit
   def edit
+    @existHashtags = Array.new()
+    @hashtagString = '';
+    Club.find(@club['id']).hashtags.each_with_index do |tuple, i|
+      @existHashtags << tuple['hashtag'];
+      if(i == 0)
+        @hashtagString += tuple['hashtag'];
+      else
+        @hashtagString += "," + tuple['hashtag'];
+      end
+    end
+    @numOfHashTag = @existHashtags.length;
   end
+
 
   # POST /clubs
   # POST /clubs.json
