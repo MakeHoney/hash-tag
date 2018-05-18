@@ -10,5 +10,14 @@
   <%= @club.desc %>
 </p>
 
+<p>
+  <strong>
+    <% @club.hashtags.each do |tuple| %>
+      <%= tuple['hashtag'] %> &nbsp;
+    <% end %>
+  </strong>
+</p>
+
+
 <%= link_to 'Edit', edit_club_path(@club) %> |
 <%= link_to 'Back', clubs_path %>

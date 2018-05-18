@@ -5,6 +5,17 @@ class ClubsController < ApplicationController
   # GET /clubs.json
   def index
     @clubs = Club.all
+    @hashtags = Hashtag.all
+    hashIds = Hashtag.ids;
+    hashIds.shuffle!;
+    @randHashtags = Array.new();
+    5.times do |i|
+      @randHashtags << @hashtags.where(id: hashIds[i])[0]['hashtag'];
+    end
+
+    rand = Random.new();
+    rand(Hashtag.ids.length);
+
   end
 
   # GET /clubs/1
@@ -49,6 +60,7 @@ class ClubsController < ApplicationController
       end
     end
 
+    # < ----------------- hash tag start ----------------- >
 
     # new.html.erb로부터 전달받은 해시태그 스트링을 파싱하여 해시태그 테이블에 넣는다.
     # Hashtag = ApplicationRecord::Hashtag
@@ -70,14 +82,14 @@ class ClubsController < ApplicationController
         Club.find(@club['id']).hashtags << Hashtag.find(hashNew['id']);
       end
     end
+
+    # < ----------------- hash tag end ----------------- >
+
   end
 
   # PATCH/PUT /clubs/1
   # PATCH/PUT /clubs/1.json
   def update
-    @club.hashtag_ids # array of hashtag object ids this @club currently has
-
-
     respond_to do |format|
       if @club.update(club_params)
         format.html { redirect_to @club, notice: 'Club was successfully updated.' }
@@ -93,12 +105,15 @@ class ClubsController < ApplicationController
       @club.hashtag_ids -= [hashtag_id];
     end
 
+    # < ----------------- hash tag start ----------------- >
 
     # delete hashtag no clubs have --> but i think this function has high overheads
     # because of traverse over other databases each
     clubIds = Club.ids;
     joinTableHashIdx = Array.new();
     clubIds.each do |clubId|
+      ######## get HashIds from ClubId
+      ######## use this logic samely when club lists from a hash link!
       joinTableHashIdx += Club.find(clubId).hashtag_ids
     end
     joinTableHashIdx.uniq!
@@ -120,11 +135,16 @@ class ClubsController < ApplicationController
         Club.find(@club['id']).hashtags << Hashtag.find(hashNew['id']);
       end
     end
+    # < ----------------- hash tag end ----------------- >
+
   end
 
   # DELETE /clubs/1
   # DELETE /clubs/1.json
   def destroy
+
+    # < ----------------- hash tag start ----------------- >
+
     # destroy hashtags that the club has before the club removed from db
     @club.hashtag_ids.each do |hashtag_id|
       @club.hashtag_ids -= [hashtag_id];
@@ -137,7 +157,7 @@ class ClubsController < ApplicationController
     end
     joinTableHashIdx.uniq!
     Hashtag.where.not(id: joinTableHashIdx).destroy_all;
-
+    # < ----------------- hash tag end ----------------- >
 
     @club.destroy
     respond_to do |format|
