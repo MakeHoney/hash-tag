@@ -1,12 +1,12 @@
 <h1>New Club</h1>
 
-<% hashConcat = "" %>
+<% hashtagConcat = "" %>
 
 <script>
+var vacancy = [0, 0, 0, 0, 0];
 var numOfHashTag = 0;
+var hashtagConcat = "";
 
-
-// db insert
 function addHashTag(event) {
   if(numOfHashTag > 4) {
     // alert -> can't exceed 5 tags
@@ -14,29 +14,79 @@ function addHashTag(event) {
     console.log(event);
     if(event.keyCode == 13) {
       var value = document.getElementById('hashText').value;
-      document.getElementById("hashTagContainer")
-      .innerHTML += "<button id=btn_" + numOfHashTag + " onclick=deleteHashTag(event)>"
-      + value + "</button>";
-      numOfHashTag++;
+      var buff = document.getElementById('hashtagBuff').value;
+
+      for(var i = 0 ; i < 5 ; i++) {
+        if(!vacancy[i]) {
+          document.getElementById("hashTagContainer")
+          .innerHTML += "<button id=btn_" + i + " onclick=deleteHashTag(event)>"
+          + value + "</button>";
+          numOfHashTag++; vacancy[i] = 1;
+          break;
+        }
+      }
+
+      if(buff.length == 0) {
+        document.getElementById('hashtagBuff').value += value;
+      }
+      else {
+        document.getElementById('hashtagBuff').value += "," + value;
+      }
 
       // empty text box
-      // blank(empty), space and started with #, parsing
+      // blank(empty), space and started with #, parsing, comma
       document.getElementById('hashText').value = "";
     }
   }
 }
 
-// db delete
 function deleteHashTag(event) {
-  var btnId = event.target.id;
+  var btnId = event.target.id; // a string
+  var idx = btnId.replace(/\D/g, '');
+  idx = parseInt(idx);
+
   // console.log(event);
+  // only when there are hashtags
   if(numOfHashTag > 0) {
-    // console.log(btnId);
-    var x = document.getElementById(btnId);
-    x.remove(x.selectedIndex);
+    var btnToRemove = document.getElementById(btnId);
+    var comma = (document.getElementById('hashtagBuff')
+    .value.match(/,/g) || []).length
+
+    // remove button
+    btnToRemove.remove(btnToRemove.selectedIndex);
+
     numOfHashTag--;
+
+    // change button number following removed button
+    for(var i  = 0 ; i < numOfHashTag - idx ; i++)
+      assignId( (idx + 1) + i , btnId);
+
+    tmp = document.getElementById('hashtagBuff').value.split(",");
+    tmp.splice(idx, 1);
+    console.log("aaaa : " + tmp);
+    //subtract
+
+    document.getElementById('hashtagBuff').value = "";
+
+    if(comma)
+      document.getElementById('hashtagBuff').value = tmp[0];
+
+    for(var i = 0 ; i < comma - 1 ; i++){
+      document.getElementById('hashtagBuff').value += "," + tmp[i + 1];
+      console.log(tmp);
+    }
+    vacancy[numOfHashTag] = 0; // -> must be modified
   }
 }
+// btnid = event.target.id
+function assignId(nextIdNumber, btnId){
+  var nextIdNumberStr = nextIdNumber.toString();
+  var nextId = btnId.replace(/[0-9]/, nextIdNumberStr);
+
+  document.getElementById(nextId).id =
+  document.getElementById(nextId).id.replace(/[0-9]/, (nextIdNumber - 1).toString());
+}
+
 </script>
 
 
@@ -69,7 +119,9 @@ function deleteHashTag(event) {
   </div>
 
   <!-- hidden type input tag to pass the hashtag value without user's intervention-->
-  <input type="hidden" name="lastname" value='<%= hashConcat %>'>
+  <input id="hashtagBuff" type="text" name="lastname" value='<%= hashtagConcat %>'>
+  <!-- hidden -->
+
 
   <div class="actions">
     <%= form.submit %>
@@ -81,10 +133,11 @@ function deleteHashTag(event) {
 
 
 
+<input id="hashText" type="text" placeholder="#HashTag" onKeyDown="addHashTag(event);">
+
 <!-- Hashtag Container Start -->
 <div id="hashTagContainer"> </div>
 <!-- Hashtag Container End -->
 
-<input id="hashText" type="text" placeholder="#HashTag" onKeyDown="addHashTag(event);">
 <br/>
 <%= link_to 'Back', clubs_path %>
