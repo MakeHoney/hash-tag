@@ -54,7 +54,6 @@ class ClubsController < ApplicationController
     # Hashtag = ApplicationRecord::Hashtag
     # 파싱
     hashtags = params[:hashTags].split(",");
-
     hashtags.each do |hashtag|
       # 해시태그가 테이블에 이미 존재하면 해시태그를 추가하지 않고 존재하는 해시태그의
       # id를 전달받아 join table에 두 foreign key 저장
@@ -76,6 +75,9 @@ class ClubsController < ApplicationController
   # PATCH/PUT /clubs/1
   # PATCH/PUT /clubs/1.json
   def update
+    @club.hashtag_ids # array of hashtag object ids this @club currently has
+
+
     respond_to do |format|
       if @club.update(club_params)
         format.html { redirect_to @club, notice: 'Club was successfully updated.' }
@@ -85,11 +87,58 @@ class ClubsController < ApplicationController
         format.json { render json: @club.errors, status: :unprocessable_entity }
       end
     end
+
+    # delete all past hashtag
+    @club.hashtag_ids.each do |hashtag_id|
+      @club.hashtag_ids -= [hashtag_id];
+    end
+
+
+    # delete hashtag no clubs have --> but i think this function has high overheads
+    # because of traverse over other databases each
+    clubIds = Club.ids;
+    joinTableHashIdx = Array.new();
+    clubIds.each do |clubId|
+      joinTableHashIdx += Club.find(clubId).hashtag_ids
+    end
+    joinTableHashIdx.uniq!
+    Hashtag.where.not(id: joinTableHashIdx).destroy_all;
+
+
+
+    hashtags = params[:hashTags].split(",");
+    hashtags.each do |hashtag|
+
+      if(Hashtag.exists?(hashtag: hashtag))
+        tmpHashtagId = Hashtag.where(hashtag: hashtag)[0]['id'];
+        Club.find(@club['id']).hashtags << Hashtag.find(tmpHashtagId);
+      else
+        hashNew = Hashtag.new();
+        hashNew['hashtag'] = hashtag;
+        hashNew.save;
+
+        Club.find(@club['id']).hashtags << Hashtag.find(hashNew['id']);
+      end
+    end
   end
 
   # DELETE /clubs/1
   # DELETE /clubs/1.json
   def destroy
+    # destroy hashtags that the club has before the club removed from db
+    @club.hashtag_ids.each do |hashtag_id|
+      @club.hashtag_ids -= [hashtag_id];
+    end
+
+    clubIds = Club.ids;
+    joinTableHashIdx = Array.new();
+    clubIds.each do |clubId|
+      joinTableHashIdx += Club.find(clubId).hashtag_ids
+    end
+    joinTableHashIdx.uniq!
+    Hashtag.where.not(id: joinTableHashIdx).destroy_all;
+
+
     @club.destroy
     respond_to do |format|
       format.html { redirect_to clubs_url, notice: 'Club was successfully destroyed.' }
