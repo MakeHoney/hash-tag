@@ -1,7 +1,7 @@
 <h1>New Club</h1>
 
 <script>
-var vacancy = new Array();
+var vacancy = new Array()
 var numOfHashTag = 0;
 
 function addHashTag(event) {
@@ -13,7 +13,7 @@ function addHashTag(event) {
       var value = document.getElementById('hashText').value;
       var buff = document.getElementById('hashtagBuff').value;
 
-      for(var i = numOfHashTag ; i < 5 ; i++) {
+      for(var i = 0 ; i < 5 ; i++) {
         if(!vacancy[i]) {
           document.getElementById("hashTagContainer")
           .innerHTML += "<button id=btn_" + i + " onclick=deleteHashTag(event)>"
@@ -31,7 +31,7 @@ function addHashTag(event) {
       }
 
       // empty text box
-      // blank(empty), space and started with #, parsing, comma, same tag
+      // blank(empty), space and started with #, parsing, comma
       document.getElementById('hashText').value = "";
     }
   }

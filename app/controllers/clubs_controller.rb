@@ -5,16 +5,16 @@ class ClubsController < ApplicationController
   # GET /clubs.json
   def index
     @clubs = Club.all
-    @hashtags = Hashtag.all
-    hashIds = Hashtag.ids;
+    hashtags = Hashtag.all
+    hashIds = hashtags.ids;
     hashIds.shuffle!;
     @randHashtags = Array.new();
-    5.times do |i|
-      @randHashtags << @hashtags.where(id: hashIds[i])[0]['hashtag'];
-    end
+    @clubUrlsForEachHash = Hash.new();
 
-    rand = Random.new();
-    rand(Hashtag.ids.length);
+    5.times do |i|
+      @randHashtags << hashtags.where(id: hashIds[i])[0]['hashtag'];
+      @clubUrlsForEachHash["#{@randHashtags[i]}"] = Hashtag.find(hashIds[i]).club_ids.uniq
+    end
 
   end
 
@@ -100,12 +100,13 @@ class ClubsController < ApplicationController
       end
     end
 
+
+    # < ----------------- hash tag start ----------------- >
+
     # delete all past hashtag
     @club.hashtag_ids.each do |hashtag_id|
       @club.hashtag_ids -= [hashtag_id];
     end
-
-    # < ----------------- hash tag start ----------------- >
 
     # delete hashtag no clubs have --> but i think this function has high overheads
     # because of traverse over other databases each
@@ -164,6 +165,10 @@ class ClubsController < ApplicationController
       format.html { redirect_to clubs_url, notice: 'Club was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  def hashtag
+
   end
 
   private

@@ -1,10 +1,12 @@
 <p id="notice"><%= notice %></p>
 
-<h1>Clubs</h1>
-<% @randHashtags.each do |randHashtag| %>
-  <%= randHashtag %> &nbsp;
-<% end %>
 
+
+<h1>Clubs</h1>
+<% @randHashtags.each_with_index do |randHashtag, i| %>
+<%= link_to randHashtag, club_path(4) %>   &nbsp;
+<% end %>
+<%= @clubUrlsForEachHash %>
 
 <table>
   <thead>
