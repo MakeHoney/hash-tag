@@ -5,15 +5,15 @@ class ClubsController < ApplicationController
   # GET /clubs.json
   def index
     @clubs = Club.all
+    
     hashtags = Hashtag.all
-    hashIds = hashtags.ids;
-    hashIds.shuffle!;
-    @randHashtags = Array.new();
-    @clubUrlsForEachHash = Hash.new();
+    @hashIds = hashtags.ids;
+    @hashIds.shuffle!;
+    @hashIds = @hashIds.slice(0..4)
 
-    5.times do |i|
-      @randHashtags << hashtags.where(id: hashIds[i])[0]['hashtag'];
-      @clubUrlsForEachHash["#{@randHashtags[i]}"] = Hashtag.find(hashIds[i]).club_ids.uniq
+    @randHashtags = Array.new();
+    @hashIds.length.times do |i|
+      @randHashtags << hashtags.where(id: @hashIds[i])[0]['hashtag'];
     end
 
   end

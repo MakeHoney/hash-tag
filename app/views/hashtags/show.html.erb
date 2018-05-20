@@ -1,0 +1,6 @@
+<h1>Club list</h1>
+<h1>Hashtag : <%= @Hashtag['hashtag'] %></h1><br/>
+
+<% @clubIdsForEachHash.each do |clubId| %>
+  <%= link_to Club.find(clubId).name, club_path(:id => clubId) %>
+<% end %>

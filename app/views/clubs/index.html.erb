@@ -3,10 +3,10 @@
 
 
 <h1>Clubs</h1>
+
 <% @randHashtags.each_with_index do |randHashtag, i| %>
-<%= link_to randHashtag, club_path(4) %>   &nbsp;
+  <%= link_to randHashtag, hashtag_path(:id => @hashIds[i]) %>
 <% end %>
-<%= @clubUrlsForEachHash %>
 
 <table>
   <thead>
