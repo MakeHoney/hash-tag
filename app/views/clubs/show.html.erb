@@ -13,7 +13,7 @@
 <p>
   <strong>
     <% @club.hashtags.each do |tuple| %>
-      <%= tuple['hashtag'] %> &nbsp;
+      <%= link_to tuple['hashtag'], hashtag_path(:id => tuple['id']) %>   &nbsp;
     <% end %>
   </strong>
 </p>
